@@ -1,6 +1,5 @@
 
-	//23110131316-Ahmet Talha Sivrikaya
-	//23110131355-Muhammed Mete
+	
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,11 +8,11 @@ void restart(int a,int bombac[][a],char tablo[][a]){
 	int i,j;
 	for (i = 0; i < a; i++) {
         for (j = 0; j < a; j++) {
-            bombac[i][j] = 0;//bombalar?n hepsini kaldýrýr
+            bombac[i][j] = 0;//deletes all bombs
         }
     }
-	int bomba = (a * a) / 20;	
-    for (i = 0; i < bomba; i++) {//bombalarý rastgele geri yerleþtirir
+	int bomba = (a * a) / 10;	
+    for (i = 0; i < bomba; i++) {//replaces bombs
         int randomRow, randomCol;
         do {
             randomRow = rand() % a;
@@ -23,53 +22,53 @@ void restart(int a,int bombac[][a],char tablo[][a]){
         bombac[randomRow][randomCol] = 1;
         
 }			
-	printf("Bombalar yeniden yerlestirildi!\n");		
+	printf("Bombs Are Replaced!\n");		
 }
 int main() {
    	while(1){
    		
     int a;
-    printf("Lutfen Tablo Buyuklugunu Giriniz: ");
+    printf("Please Enter the Dungeon Scale: ");
     scanf("%d", &a);
 	
 	
 		 if (a <= 4) {
-        printf("Lutfen Gecerli Aralik Giriniz (min.5x5)");      
+        printf("Please Enter Valid Range!(min.5x5)");      
     } 	
    
 	else {	  
-	printf("Iste Oyun Alaniniz\n");
+	printf("\n");
         char tablo[a][a];
-        int iz[a][a]; // karakterin arkasida býraktýðý iz 
+        int iz[a][a]; //Marks the Path Taken
         int bombac[a][a];
         int i, j;
-        int kRow = 0, kCol = 0; // karakterin konumu
+        int kRow = 0, kCol = 0; //Characters Location In Starting
 		 
 		
         srand(time(NULL));
-        // oyun alaný
+        // oyun alanÃ½
         for (i = 0; i < a; i++) {
             for (j = 0; j < a; j++) {
                 tablo[i][j] = 'o';
                 iz[i][j] = 0;
-                bombac[i][j] = 0;//merkezdeki bomba
+                bombac[i][j] = 0;//Center Bomb
                 
             }
         }
-        // rastgele yer belirleme
+        //Random Path Choosing
         int bomba = (a * a) / 10;
         for (i = 0; i < bomba; i++) {
             int randomRow, randomCol;
             do {
                 randomRow = rand() % a;
                 randomCol = rand() % a;
-            } while (tablo[randomRow][randomCol] == 'x' || (randomRow == 0 && randomCol == 0) || (randomRow == a-1 && randomCol == a-1)); // baþlangýca ve bitiþe bomba koymama kontrolü(doðruluðundan emin deðilim
+            } while (tablo[randomRow][randomCol] == 'x' || (randomRow == 0 && randomCol == 0) || (randomRow == a-1 && randomCol == a-1));//Control of not placing bombs at the beginning and end
 
             bombac[randomRow][randomCol] = 1;
         }
 		int kalancan = bomba/2;
-		printf("Amaciniz En Alttaki Cikisa Ulasmak\n");
-		printf("Tam %d Caniniz Vardir Dikkat Edin!\n",kalancan);
+		printf("Your goal is to reach the bottom exit.\n");
+		printf("You have %d lives, be careful!\n",kalancan);
         
         while (1) {
             for (i = 0; i < a; i++) {
@@ -82,15 +81,15 @@ int main() {
                 }
                 printf("\n");
             }
-            // Çýkýþa ulaþma kontrolü
+            // exit control
             if (kRow == a - 1 && kCol == a - 1) {
-                printf("Tebrikler! Oyun bitti!\n");
+                printf("Congratulations You Have Reached The Exit!\n");
                 return 0;
             }
            
-		    // hareket mekanizmasý
+		    //movement code
             char hareket;
-            printf("WASD tuslariyla hareket edin (cikis icin 'q',bombalari yeniden yerlestirmek icin 'r'): ");
+            printf("Move with WASD ('q' to exit, 'r' to re-deploy bombs):");
             scanf(" %c", &hareket);
 
             switch (hareket) {
@@ -119,32 +118,30 @@ int main() {
                     }
                     break;
                 case 'q':
-                    printf("Oyun bitti!\n");              
+                    printf("Game Over!\n");              
                     return 0;
-                case 'r'://bombalarý tekrar yerleþtirme fonksiyonu
+                case 'r'://bomb relocation function
 				     restart(a,bombac ,tablo);
 					 break;    
             }
             
 		     if (bombac[kRow][kCol]) {
                 kalancan--; 
-			    printf("%d Caniniz Kaldi!\n",kalancan);
+			    printf("You have %d lives left!\n",kalancan);
                 
                 if (kalancan == 0) {
                     printf("BOOOOOOOMMM!!!!!?\n");
                     return 0;
                 }
-                kRow = 0;//karakteri baþa gönderme
+                kRow = 0;//send character to starting path
                 kCol = 0;
-            }
-	
-            // tabloyu ve karakteri hareketten sonra tekrar yerleþtirme
-			
+            }        
+	//Reposition table and character after move		
             for (i = 0; i < a; i++) {
                 for (j = 0; j < a; j++) {
 					if (i == kRow && j == kCol) // karakter
                         tablo[i][j] = 'K';
-                    else if (iz[i][j]) // iz
+                    else if (iz[i][j]) //marking
                         tablo[i][j] = '-';
                     else
                     	tablo[i][j] = 'o';                       
